@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>College AI Resume Checker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+      color: #0a3d0a;
+    }
+
+    /* Fullscreen Three.js background canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 2;
+      margin: 20px 0;
+      text-align: center;
+      font-size: 2.5rem;
+      background: linear-gradient(90deg, #0f0, #0a0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 15px;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      backdrop-filter: blur(8px);
+      border: 3px solid transparent;
+      animation: glow 3s infinite alternate;
+      margin: 0 auto;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 10px #0f0, 0 0 20px #0a0; border-color: #0f0; }
+      100% { box-shadow: 0 0 25px #0a0, 0 0 40px #0f0; border-color: #0a0; }
+    }
+
+    label, p, h2 {
+      margin: 10px 0;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+      border: 2px dashed #0a0;
+      border-radius: 8px;
+      background: #f8fff8;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button {
+      margin: 10px 5px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+    }
+    button:hover { transform: scale(1.05); }
+
+    #analyzeBtn { background: #0f0; color: #fff; }
+    #clearBtn { background: #f55; color: #fff; }
+    #sampleBtn { background: #0a0; color: #fff; }
+    #downloadBtn { background: #08f; color: #fff; }
+
+    #result {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #0a0;
+      border-radius: 10px;
+      background: #f0fff0;
+      min-height: 100px;
+      white-space: pre-wrap;
+    }
+
+    /* Pinball balls */
+    .ball {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff, #0f0);
+      box-shadow: 0 0 10px #0f0, 0 0 20px #0a0;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <h1>College AI Resume Checker</h1>
+
+  <div class="container">
+    <p>Upload your resume and get a friendly, optimistic review.<br>
+       This is a demo front-end; integrate your AI endpoint where noted in the code.</p>
+
+    <label for="resumeInput">Choose a resume (PDF or DOCX)</label><br>
+    <input type="file" id="resumeInput" accept=".pdf,.docx"><br>
+
+    <button id="analyzeBtn">Analyze Resume</button>
+    <button id="clearBtn">Clear</button>
+    <button id="sampleBtn">Use Sample</button>
+
+    <h2>How it works</h2>
+    <p>Upload resume → click Analyze.<br>
+       Simulated AI runs locally and produces suggestions.<br>
+       Download JSON report or copy suggestions into your resume editor.</p>
+
+    <h2>Result</h2>
+    <div id="result">—</div>
+
+    <button id="downloadBtn">Download Report</button>
+
+    <h2>Strengths</h2>
+    <ul id="strengthsList"></ul>
+
+    <h2>Improvements</h2>
+    <ul id="improvementsList"></ul>
+
+    <p>Keyword Match: <span id="keywordMatch">—</span></p>
+  </div>
+
+  <!-- Pinball animation -->
+  <script>
+    const balls = [];
+    const numBalls = 15;
+    const body = document.body;
+
+    for (let i = 0; i < numBalls; i++) {
+      const ball = document.createElement("div");
+      ball.classList.add("ball");
+      ball.style.left = Math.random() * window.innerWidth + "px";
+      ball.style.top = Math.random() * window.innerHeight + "px";
+      body.appendChild(ball);
+
+      balls.push({
+        el: ball,
+        x: parseFloat(ball.style.left),
+        y: parseFloat(ball.style.top),
+        dx: (Math.random() - 0.5) * 3,
+        dy: (Math.random() - 0.5) * 3
+      });
+    }
+
+    function animateBalls() {
+      balls.forEach(ball => {
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.x <= 0 || ball.x >= window.innerWidth - 15) ball.dx *= -1;
+        if (ball.y <= 0 || ball.y >= window.innerHeight - 15) ball.dy *= -1;
+
+        ball.el.style.left = ball.x + "px";
+        ball.el.style.top = ball.y + "px";
+      });
+      requestAnimationFrame(animateBalls);
+    }
+    animateBalls();
+
+    window.addEventListener("resize", () => {
+      balls.forEach(ball => {
+        ball.x = Math.min(ball.x, window.innerWidth - 15);
+        ball.y = Math.min(ball.y, window.innerHeight - 15);
+      });
+    });
+  </script>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
